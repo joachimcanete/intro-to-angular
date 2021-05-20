@@ -110,7 +110,7 @@ export class AppComponent {
   tite: string = 'hello-world'
 }
 ```
-Where I to incorrectlty assign a class's type, I would receive an error. Very useful
+Were I to incorrectlty assign a class's type, I would receive an error. Very useful
 ```
 // wrong type
 export class AppComponent {
@@ -122,7 +122,7 @@ With the above class being exported to the predetermined `templateUrl`, we just 
 ```
 <h1>{{ title }}</h1>
 ```
->Fun fact about string interpolation within `html` docs, they accept **in-line** code, such as math formulas or `JavaScript` methods. `H E C K`, use *ternerary operators* if you'd like
+>Fun fact about string interpolation within `html` docs, they accept **in-line** code, such as math formulas or `JavaScript` methods. Heck, use *ternerary operators* if you'd like
 ```
 <h1>{{ title.toUpperCase() }}</h1>
 ```
@@ -168,4 +168,41 @@ And then inside the `app.component.html` file:
 ```
 <app-header></app-header>
 ```
-The components contents are shown in the designated `component-name.component.html` file.
+The components contents are shown in the designated `header.component.html` file.
+
+---
+### Add a bit of styling
+
+While I have global styling available in the `app.component.css` file, I also want to incorporate styles unique to the **header component**. These styles will be written in the `header.component.css` file.
+```
+<header>
+  <h1>{{ title }}</h1>
+</header>
+```
+---
+
+### Another Component
+
+I want to create a new component for this app, and in order to do that, it's important that I am in the `app` level of this porject tree, so for this project, that'll be `hello-world/src/app`. Then, I'll hop into my terminal and type out 
+
+```
+ng generate component components/button
+```
+
+and it'll churn out a new component with all it's affiliated files (`.css`, `.html`, `.spec.ts`, `.ts`).
+
+Because components are reusable, the `button` component can be imbedded into different files. For the purpose of its use in the `header.component`, I'll imbed it into the `header.component.html` file using the button's **selector** shown in `button.component.ts`.
+```
+@Component({
+  selector: 'app-button',
+})
+```
+
+With the selector identified, hop into `header.component.html` and add a new tag for the button
+```
+<header>
+  <h1>{{ title }}</h1>
+  <app-button></app-button>
+</header>
+```
+
