@@ -206,3 +206,16 @@ With the selector identified, hop into `header.component.html` and add a new tag
 </header>
 ```
 
+Now that the button has been added to the header, I want to include some uniqe styling for its placement, but not for the component in its entirety. Instead of modifying the `button.component.css` file, I can just do some *in-line* styling, much like adding properties in `React`.
+```
+<app-button color="green" text="Add">
+</app-button>
+```
+
+To grab onto the button properties (`color='green' text='Add'`) themselves, I need to hop into `button.component.ts` and bring in `Input` from `@angular/core`.
+```
+import { Component, OnInit, Input } from '@angular/core';
+```
+
+Then declare Input in the `button class`
+```
