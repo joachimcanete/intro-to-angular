@@ -1,4 +1,4 @@
-# Angular Notes
+# Intro to Angular Notes
 #### Joachim Canete
 #### Personal Projects
 
@@ -181,7 +181,7 @@ While I have global styling available in the `app.component.css` file, I also wa
 ```
 ---
 
-### Another Component
+### 8. Another Component
 
 I want to create a new component for this app, and in order to do that, it's important that I am in the `app` level of this porject tree, so for this project, that'll be `hello-world/src/app`. Then, I'll hop into my terminal and type out 
 
@@ -217,5 +217,112 @@ To grab onto the button properties (`color='green' text='Add'`) themselves, I ne
 import { Component, OnInit, Input } from '@angular/core';
 ```
 
-Then declare Input in the `button class`
+Then declare Input in the `button class` with the props we brought into the `app-button` tag, making sure to site those declarations as strings
 ```
+export class ButtonComponent implements OnInit {
+  @Input() text = 'string';
+  @Input() color = 'string';
+}
+```
+
+From here, the button component can instantiated via string interpolation (`{[  }}`) and then further modified in its parent components. For example, in `button.component.html`, the button template accepts its `text` property externally, so the template is written as below.
+```
+<button class='button'>{{ text }}</button>
+```
+
+Then, since the one of the parent components of `button` is `header`, we can modify its `text` property for that parent so it's reflected specifically for that child.
+```
+<app-button text="Hello"></app-button>
+```
+OR
+
+```
+<app-button text="World"></app-button>
+```
+The same can be saide for the `color` property, which is not limited to *in-line styling*. For the purposes of this lecture, `button`'s `color` prop will be accessed via in-line styles, and must be written with a rather unique syntax so that it is accessible.
+```
+<button [ngStyle]="{ 'background-color': color }" class="btn">
+  {{ text }}
+</button>
+```
+
+`Angular ngStyle` is a built-in directive that lets me set a give DOM elemen's style properties. It's comprised of key:value pairs in which the key is the desired style's name (for the previous example, `'background-color'`) and its value the desired expression to be evaluated (`: color`).
+
+Again, because one of the parent components of `button` is `header`, we can modify its `color` prop for that parent so it's reflected specifically for its child.
+```
+<app-button color="green"></app-button>
+```
+
+OR
+```
+<app-button color="red"></app-button>
+```
+
+### 9. Adding Evnets
+
+Adding events to specific items/components is not unlike how it's done in React, where the event is written into the tag's attributes. The key difference is that we need to incorporate "`()`" and "`''`" appropriately.
+```
+<button
+  (click)="onClick()"  
+>
+```
+
+While simply adding the event inline to the tag will initially render an error, we modify the specific component's class to include the desired event.
+```
+export class ButtonComponent implements OnInit {
+  onClick() {
+    console.log('Add');
+  }
+}
+```
+
+A big thing to keep an eye out for is sustainable reuse of components, and while for small-scale projects it's "okay" to write out the functionality of a component within it's designated class, it's neither dry nor efficient for larger projects.
+
+To accomodate the idea of reusability, enter "outout" and "event emitters" which will "output" the desired event. In order to do that, both `Output` and `EventEmitter` need to be brought in from `@angular/core` and then addressed in the `export class` code-block. Finally, the `onClick()` event functionality will be written with `output emit` in mind.
+```
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+
+// FIRST grabbing Output and EventEmitter
+
+export class ButtonComponent implements OnInit {
+  @Output() btnClick = new EventEmitter();
+
+// SECOND declaring that the Output will be a new EventEmitter
+
+  onClick() {
+    this.btnClick.emit();
+  }
+
+// THIRD stating the button's funcationality in the onClick event where "btnClick" is the name of the event itself
+}
+```
+
+The final step to making the new button functional is to head to the specific parent component (in this case, `header`) and include the onClick event prop and naming it with the event we designated as "btnClick" the the `button` component.
+```
+<app-button
+  color="green"
+  text="Add"
+  (btnClick)="toggleAddTask()"
+></app-button>
+```
+
+Because the `header` component is the parent that take's in the `button` component functionality, it is *inside* the header component we define the event's results(`"toggleAddTask()"`) of `(btnClick)`.
+```
+//header.component.ts
+export class HeaderComponent implements OnIinit {
+  toggleAddTask() {
+    console.log('toggle');
+  }
+}
+```
+
+So the long-winder, over-arching workflow kind of follows the idea below
+```
+Child component ->
+Child component class properties/functionality ->
+Child component template and styles (either sheet or inline) ->
+Parent component implements use of Child component->
+Parent component class properties/functionality ->
+Parent component templating and styles
+```
+
