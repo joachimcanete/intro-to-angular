@@ -397,5 +397,48 @@ export class TasksComponent implements OnInit {
 
 > The 'tasks' "type" is an array (Task[]) and it's directly set to 'TASKS', which we imported from the JSON data.
 
-With the way the `task` component is written above, all tasks saved in the backend (the `JSON` data) can be looped over when rendered on `html`.
+With the way the `task` component is written above, all tasks saved in the backend (the `JSON` data) can be looped over when rendered on `html`. To do so, a new **directive** is introduced to the file.
+```
+// hello-world/src/app/components/tasks/tasks.components.html/
 
+<p *ngFor="let task of tasks">{{ task.text }}</p>
+```
+> `*ngFor=` is a built-in template directive that makes it easy to loop over something like an array or an object and create a template for each item.
+
+> `"let task of tasks"` is some in-line logic. "`tasks`" is already defined in the components `.ts` file's class type (`tasks: Task[] = TASKS;`)
+
+> `{{ task.text }}` is how we access specific properties from the `JSON data` imported earlier in building out this component. because we state `"let tasks of tasks"` as a property, the `task` portion is how we call values in the `tasks` array.
+
+This is pretty much a long-winded way of `mapping over` the `JSON Data` done in react.
+
+### Multi-layer Components??
+
+Again, keeping in mind the pursuit of reuseable components, looping through the tasks and their various properties can be done with an additional child component within the parent component. To do so, some changes need to be made.
+
+**But first**, a new component!
+```
+ng generate component components/task-item
+```
+
+And then to make some marvelous adjustments:
+```
+// hello-world/src/app/components/tasks/tasks.components.html/
+
+// BEFORE
+<p *ngFor="let task of tasks">{{ task.text }}</p>
+
+// AFTER
+<app-task-item
+  *ngFor="let task of tasks"
+  [task]="task"
+>
+</app-task-item>
+```
+
+> The `p` tag has been changed to the `selector` from the `task-item` component, `selector: 'app-task-item',`
+
+> For `[task]="task"`, pass in a property of `task` that equals the *indivudal task* for each specific iteration. If I am understanding the syntax correctly, `[task]` interacts with the `task-item.component.ts` file while `"task"` interacts with the `task-item.component.ts` file.
+
+> Eliminate `{{ task.text }}`
+
+In `task-component.ts`, we want
