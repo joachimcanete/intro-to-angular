@@ -260,14 +260,16 @@ OR
 
 ### 9. Adding Evnets
 
-Adding events to specific items/components is not unlike how it's done in React, where the event is written into the tag's attributes. The key difference is that we need to incorporate "`()`" and "`''`" appropriately.
+Adding events to specific items/components is not unlike how it's done in React, where the event is written into the tag's attributes. The key difference is that we need to incorporate "`()`" and "`""`" appropriately.
 ```
 <button
   (click)="onClick()"  
 >
 ```
 
-While simply adding the event inline to the tag will initially render an error, we modify the specific component's class to include the desired event.
+Inside the parentheses ( "`()`" ) is the type of event and inside the quotation marks ( "`""`" ) is the method defined in component's `.ts` file.
+
+While simply adding the event inline to the tag will initially render an error, we modify the specific component's `class` to include the desired event.
 ```
 export class ButtonComponent implements OnInit {
   onClick() {
@@ -297,6 +299,8 @@ export class ButtonComponent implements OnInit {
 }
 ```
 
+> Because the `btnClick` is written to **emit an event**, it can then be customised as needed based on the parent components it will later support.
+
 The final step to making the new button functional is to head to the specific parent component (in this case, `header`) and include the onClick event prop and naming it with the event we designated as "btnClick" the the `button` component.
 ```
 <app-button
@@ -306,7 +310,8 @@ The final step to making the new button functional is to head to the specific pa
 ></app-button>
 ```
 
-Because the `header` component is the parent that take's in the `button` component functionality, it is *inside* the header component we define the event's results(`"toggleAddTask()"`) of `(btnClick)`.
+In this instance, we give a new button the `btnClick` event and expect it to run as `"toggleAddTask()"` which is defined in `header.component.ts`.
+
 ```
 //header.component.ts
 export class HeaderComponent implements OnIinit {
@@ -316,13 +321,81 @@ export class HeaderComponent implements OnIinit {
 }
 ```
 
-So the long-winder, over-arching workflow kind of follows the idea below
+So the long-winded, over-arching workflow kind of follows the idea below
 ```
-Child component ->
-Child component class properties/functionality ->
-Child component template and styles (either sheet or inline) ->
-Parent component implements use of Child component->
+Parent component ->
 Parent component class properties/functionality ->
-Parent component templating and styles
+Parent component template and styles (either sheet or inline) ->
+Child component implements use of Parent component->
+Child component class properties/functionality ->
+Child component templating and styles
 ```
+
+### JSON in Angular
+
+Not unlike using a JSON server for React.js. However, for the purposes of this exercise, the `JSON` file needs an interface in order to understand the content being provided.
+
+Right at the top, '`./Task`' is being imported from an external file. This **interface** is built out like so:
+```
+// hello-world/src/app/Tasks.ts
+
+export interface Task {
+  id?: number, // the '?' makes the 'id' **optional**
+  text: string;
+  day: string;
+  reminder: boolean;
+}
+```
+
+>The data can **only** include properties that are defined in the interface.
+
+The interface can now be brought into the `JSON` file.
+```
+// hello-world/src/app/mock-tasks.ts
+
+import { Task } from './Task;
+export const TASKS: Task[] = [
+  {
+    ...
+  }
+]
+```
+
+The interface can be added as a certain **"type"**, so it's written after declaring the `constant` in the `export` line: `TASKS: Task[]`. Because the data is an **array**, the `[]` must be included. If the data was written as an **object**, the **"type"** could be written without the brackets: `TASKS: Task`.
+
+The data can **only** include properties that are defined in the interface.
+
+### Task Component
+
+Build out a new component by running the generate component command (`ng generate component components/tasks`). I already want this component to be functional on the app level, and to make sure that it is functional as well, I'll write it in the app level's `html` file.
+```
+// hello-world/src/app/app.component.html
+
+<div class="container">
+<app-header></app-header>
+<app-tasks></app-tasks>
+</div>
+```
+
+Then, loading up the `task` component's `.html` & `.ts` files, I'll write out its functionality.
+
+To start, I want the `JSON` and `JSON interface` files imported right from the get go.
+```
+// hello-world/src/app/components/tasks/tasks.components.ts/
+
+import { Component, OnInit } from '@angular/core';
+import { Task } from '../../Task'; // interface file
+import { TASKS } from '../../mock-tasks'; // JSON data
+```
+
+I want to assign the `{ Task }` & `{ TASKS }` as properties of this component, so I need to build out the functionality inside the `task` component's `class`.
+```
+export class TasksComponent implements OnInit {
+  tasks: Task[] = TASKS;
+}
+```
+
+> The 'tasks' "type" is an array (Task[]) and it's directly set to 'TASKS', which we imported from the JSON data.
+
+With the way the `task` component is written above, all tasks saved in the backend (the `JSON` data) can be looped over when rendered on `html`.
 
